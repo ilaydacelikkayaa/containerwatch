@@ -1,0 +1,50 @@
+services:
+    api:
+      build: .
+      container_name: containerwatch-api
+
+      ports:
+        - "8080:8000"
+      restart: unless-stopped
+    redis:
+      container_name: containerwatch-redis
+      image: redis:7-alpine
+      restart: unless-stopped
+      volumes:
+        - redis-data:/data
+      command: ["redis-server", "--appendonly", "yes"]
+    
+    prometheus:
+     container_name: containerwatch-prometheus
+     image: prom/prometheus:latest
+     ports:
+       - "9090:9090"
+     restart: unless-stopped
+     volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+    grafana:
+      container_name: containerwatch-grafana
+      image: grafana/grafana:latest
+      ports: 
+       - "3000:3000"
+      restart: unless-stopped
+      volumes:
+        - grafana-data:/var/lib/grafana
+
+    cadvisor:
+      container_name: containerwatch-cadvisor
+      image: gcr.io/cadvisor/cadvisor:v0.49.1
+      ports:
+        - "8081:8080"
+      restart: unless-stopped
+      volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:ro
+        - /sys:/sys:ro
+        - /var/lib/docker:/var/lib/docker:ro
+volumes:
+  redis-data:
+  grafana-data:
+
+   
