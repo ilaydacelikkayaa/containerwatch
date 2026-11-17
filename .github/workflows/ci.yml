@@ -1,0 +1,21 @@
+name: ContainerWatch CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with: 
+          python-version: '3.11' 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run python tests
+        run: python -m pytest -v
+      - name: Build Docker image
+        run: docker build -t containerwatch:ci .
